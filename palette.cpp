@@ -45,38 +45,16 @@ palette::palette(std::vector<Magick::Color> foci)
     int section = std::floor(static_cast<double>(i) / sectionSize);
     double interpolation = (static_cast<double>(i) / sectionSize) - section;
 
-    Magick::ColorHSL interpLeft = foci[section];
-    Magick::ColorHSL interpRight = foci[section+1];
-
-    double newHue;
-    double diff = interpRight.hue() - interpLeft.hue();
-    if (diff < 0)
-    {
-      std::swap(interpLeft, interpRight);
-      
-      diff = -diff;
-      interpolation = 1 - interpolation;
-    }
+    Magick::ColorRGB interpLeft = foci[section];
+    Magick::ColorRGB interpRight = foci[section+1];
     
-    if (diff > 0.5)
-    {
-      newHue = 1.0 + interpLeft.hue()
-        * (interpolation * (interpRight.hue() - interpLeft.hue() - 1.0));
-      
-      if (newHue > 1.0)
-      {
-        newHue -= 1.0;
-      }
-    } else {
-      newHue = interpLeft.hue() + interpolation * diff;
-    }
-    
-    Magick::ColorHSL interpolated(
-      newHue,
-      ((1.0 - interpolation) * interpLeft.saturation())
-        + (interpolation * interpRight.saturation()),
-      ((1.0 - interpolation) * interpLeft.luminosity())
-        + (interpolation * interpRight.luminosity()));
+    Magick::ColorRGB interpolated(
+      ((1.0 - interpolation) * interpLeft.red())
+        + (interpolation * interpRight.red()),
+      ((1.0 - interpolation) * interpLeft.green())
+        + (interpolation * interpRight.green()),
+      ((1.0 - interpolation) * interpLeft.blue())
+        + (interpolation * interpRight.blue()));
 
     gradient_.push_back(interpolated);
   }
