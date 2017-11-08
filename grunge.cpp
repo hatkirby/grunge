@@ -16,6 +16,10 @@ grunge::grunge(
   // Load the config file.
   YAML::Node config = YAML::LoadFile(configFile);
 
+  // Set up the verbly database.
+  database_ = std::unique_ptr<verbly::database>(
+    new verbly::database(config["verbly_datafile"].as<std::string>()));
+
   // Set up the Twitter client.
   twitter::auth auth;
   auth.setConsumerKey(config["consumer_key"].as<std::string>());
@@ -24,10 +28,6 @@ grunge::grunge(
   auth.setAccessSecret(config["access_secret"].as<std::string>());
 
   client_ = std::unique_ptr<twitter::client>(new twitter::client(auth));
-
-  // Set up the verbly database.
-  database_ = std::unique_ptr<verbly::database>(
-    new verbly::database(config["verbly_datafile"].as<std::string>()));
 }
 
 void grunge::run() const
