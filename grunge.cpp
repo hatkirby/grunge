@@ -243,7 +243,7 @@ Magick::Image grunge::getImageForNoun(verbly::word pictured) const
     {
       pic.read(img);
 
-      if ((pic.rows() > 0) && (pic.columns() >= 800))
+      if (pic.rows() > 0)
       {
         std::cout << url << std::endl;
         found = true;
@@ -265,6 +265,16 @@ Magick::Image grunge::getImageForNoun(verbly::word pictured) const
 
 Magick::Image grunge::pixelateImage(Magick::Image image) const
 {
+  // Check that the image is at least 800 pixels in width.
+  if (image.columns() < 800)
+  {
+    Magick::Geometry blownUp(
+      800,
+      image.rows() * 800 / image.columns());
+
+    image.zoom(blownUp);
+  }
+
   // Check that the image dimensions are a multiple of four.
   if ((image.rows() % 4 != 0) || (image.columns() % 4 != 0))
   {
