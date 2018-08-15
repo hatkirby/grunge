@@ -329,10 +329,15 @@ Magick::Image grunge::pastelizeImage(Magick::Image input) const
 
 std::string grunge::generateTweetText(verbly::word pictured) const
 {
+  verbly::filter formFilter =
+    (verbly::form::proper == false)
+    // Blacklist slurs and slur homographys
+    && !(verbly::word::usageDomains %= (verbly::notion::wnid == 106717170));
+
   verbly::word simpler = database_->words(
     (verbly::notion::partOfSpeech == verbly::part_of_speech::noun)
     && (verbly::notion::fullHyponyms %= pictured)
-    && (verbly::form::proper == false)).first();
+    && (verbly::word::forms(verbly::inflection::base) %= formFilter)).first();
 
   std::vector<std::string> symbols = {"☯","✡","☨","✞","✝","☮","☥","☦","☪","✌"};
   std::string prefix;
